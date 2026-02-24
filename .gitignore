@@ -1,0 +1,23 @@
+### Node / 前端依赖
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-lock.yaml
+package-lock.json
+
+### macOS
+.DS_Store
+
+### Python 依赖（如有使用）
+venv/
+.venv/
+env/
+__pycache__/
+*.py[cod]
+
+### 日志 / 临时文件
+*.log
+tmp/
+temp/
+
