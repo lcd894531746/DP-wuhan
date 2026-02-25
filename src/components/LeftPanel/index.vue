@@ -12,11 +12,7 @@
             <div class="safe-days-label-text">企业安全运行天数</div>
           </div>
           <div class="safe-days-counter">
-            <span
-              v-for="(d, i) in safeDays"
-              :key="i"
-              class="digit-box"
-            >
+            <span v-for="(d, i) in safeDays" :key="i" class="digit-box">
               <span class="digit">{{ d }}</span>
             </span>
             <span class="unit">天</span>
@@ -88,24 +84,24 @@
         </div>
         <div class="iot-line"></div>
         <div class="elevator-brand">
-          <div class="safe-days-label">
-            <div class="safe-days-label-icon">
-              <img style="width: 28px; height: 20px;" src="@/assets/images/sub-icon.png" alt="电梯品牌和使用年限">
+          <div class="elevator-brand-header">
+            <div class="safe-days-label">
+              <div class="safe-days-label-icon">
+                <img style="width: 28px; height: 20px;" src="@/assets/images/sub-icon.png" alt="电梯品牌和使用年限">
+              </div>
+              <div class="safe-days-label-text">电梯品牌和使用年限</div>
             </div>
-            <div class="safe-days-label-text">电梯品牌和使用年限</div>
-          </div>
-          <div class="brand-tabs">
-            <span class="tab active">品牌</span>
-            <span class="tab">年限</span>
+            <div class="brand-tabs">
+              <div class="tab" :class="{ active: activeBrandTab === 'brand' }" @click="activeBrandTab = 'brand'">
+                品牌
+              </div>
+              <div class="tab" :class="{ active: activeBrandTab === 'year' }" @click="activeBrandTab = 'year'">
+                年限
+              </div>
+            </div>
           </div>
           <div class="pie-chart-row">
-            <!-- 饼图占位，后续替换为 ECharts 或实际图片 -->
-            <div class="pie-chart-placeholder">饼图</div>
-            <div class="pie-legend">
-              <span class="legend-item"><i class="dot dot-yellow"></i>蒂森</span>
-              <span class="legend-item"><i class="dot dot-blue"></i>奥的斯</span>
-              <span class="legend-item"><i class="dot dot-cyan"></i>通力</span>
-            </div>
+            <div class="pie-chart-placeholder"></div>
           </div>
         </div>
       </div>
@@ -136,6 +132,8 @@ const iotStats = ref({
   iotOnline: 90,
   intercomOnline: 90,
 })
+
+const activeBrandTab = ref('brand')
 </script>
 
 <style scoped>
@@ -170,7 +168,7 @@ const iotStats = ref({
 
 .left-block-3 {
   width: 404px;
-  height: 503px;
+  /* height: 503px; */
   overflow: hidden;
   background: url('@/assets/images/left-block-3.png') no-repeat center;
   background-size: 100% 100%;
@@ -365,6 +363,7 @@ const iotStats = ref({
   position: relative;
   background: url('@/assets/images/icon-2.png') no-repeat center center;
   background-size: 100% 100%;
+
   &::after {
     content: '';
     display: block;
@@ -443,56 +442,82 @@ const iotStats = ref({
 }
 
 .rate-label {
-font-family: Adobe Heiti Std;
-font-weight: normal;
-font-size: 16px;
-color: #00E4FF;
+  font-family: Adobe Heiti Std;
+  font-weight: normal;
+  font-size: 16px;
+  color: #00E4FF;
 }
 
 .elevator-brand {
   margin-top: 4px;
 }
 
-.brand-tabs {
+.elevator-brand-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.elevator-brand .safe-days-label {
+  margin: 10px 0 10px 0;
   display: inline-flex;
-  padding: 4px;
-  border-radius: 4px;
-  border: 1px solid rgba(0, 186, 255, 0.4);
-  margin-bottom: 12px;
+  align-items: center;
+}
+
+.elevator-brand .brand-tabs {
+  margin-bottom: 0;
+  display: inline-flex;
+  margin-left: 8px;
+  vertical-align: middle;
 }
 
 .tab {
-  padding: 4px 14px;
+  width: 89px;
+  height: 25px;
   font-size: 12px;
-  color: #94a3b8;
   cursor: pointer;
+  text-align: center;
+  line-height: 25px;
+  font-size: 12px;
+  background: url('@/assets/images/icon-8.png') no-repeat center center;
+  background-size: 100% 100%;
+  margin-left: 10px;
 }
 
 .tab.active {
-  color: #ffffff;
-  background: rgba(0, 186, 255, 0.4);
-  border-radius: 2px;
+  background: url('@/assets/images/icon-7.png') no-repeat center center;
 }
 
 .pie-chart-row {
   display: flex;
   align-items: center;
-  gap: 16px;
   margin-top: 8px;
+  background: url('@/assets/images/icon-6.png') no-repeat center center;
+  background-size: 100% 100%;
+  width: 385px;
+  height: 179px;
 }
 
 .pie-chart-placeholder {
-  width: 120px;
-  height: 120px;
-  flex-shrink: 0;
-  background: rgba(0, 186, 255, 0.1);
-  border: 1px dashed rgba(0, 186, 255, 0.4);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: rgba(0, 186, 255, 0.5);
-  font-size: 12px;
+  background: url('@/assets/images/icon-9.png') no-repeat center center;
+  background-size: 100% 100%;
+  width: 100%;
+  height: 100%;
+  background-position: center center;
+  background-size: 183px 114px;
+  position: relative;
+  &::after {
+    content: '';
+    display: block;
+    width: 146px;
+    height: 104px;
+    background: url('@/assets/images/icon-10.png') no-repeat center center;
+    background-size: 100% 100%;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
 }
 
 .pie-legend {
@@ -529,4 +554,3 @@ color: #00E4FF;
   background: #38bdf8;
 }
 </style>
-

@@ -1,32 +1,59 @@
 <template>
   <section class="panel right-panel">
-    <div class="block">
-      <div class="block-title">>> 质量板块</div>
+    <div class="block right-block-1">
+      <div class="block-title">质量板块</div>
       <div class="block-body">
         <div class="quality-control">
-          <div class="sub-title">◇ 质量管控</div>
+          <div class="safe-days-label">
+            <div class="safe-days-label-icon">
+              <img
+                style="width: 28px; height: 20px"
+                src="@/assets/images/sub-icon.png"
+                alt="质量管控"
+              />
+            </div>
+            <div class="safe-days-label-text">质量管控</div>
+          </div>
           <div class="inspection">
             <div class="inspection-item">
-              <span>检验检测</span>
-              <span>总台数 12345</span>
-              <span>合格 56</span>
-              <span>不合格 21</span>
+              <div class="inspection-title">检验检测</div>
+              <div class="inspection-row">
+                <span>合格</span>
+                <span class="inspection-number number-1">56</span>
+              </div>
+              <div class="inspection-row">
+                <span>不合格</span>
+                <span class="inspection-number inspection-number-warning number-2">21</span>
+              </div>
             </div>
             <div class="inspection-item">
-              <span>三方抽检</span>
-              <span>合格 62</span>
-              <span>不合格 12</span>
+              <div class="inspection-title">三方抽检</div>
+              <div class="inspection-row">
+                <span>合格</span>
+                <span class="inspection-number number-1">62</span>
+              </div>
+              <div class="inspection-row">
+                <span>不合格</span>
+                <span class="inspection-number inspection-number-warning number-2">12</span>
+              </div>
             </div>
             <div class="inspection-item">
-              <span>一次性检验合格率</span>
-              <span>156 90%</span>
+              <div class="inspection-title mb-20">一次性检验合格率</div>
+              <div class="inspection-row">
+                <span class="inspection-number number-1 " style="font-size: 16px;">156</span>
+                <span class="inspection-number number-1" style="font-size: 16px;">90%</span>
+              </div>
             </div>
             <div class="inspection-item">
-              <span>超期未检测统计</span>
-              <span>1260</span>
+              <div class="inspection-title mb-20">超期未检测统计</div>
+              <div class="inspection-row">
+                <span></span>
+                <span class="inspection-number inspection-number-warning number-2" style="font-size: 16px;">1260</span>
+              </div>
             </div>
           </div>
         </div>
+        <div class="iot-line"></div>
         <div class="maintenance">
           <div class="sub-title">◇ 维保</div>
           <div class="date-tabs">
@@ -35,11 +62,17 @@
             <span class="tab">月</span>
             <span class="tab">年</span>
           </div>
-          <div class="donut-placeholder">
-            <div class="donut-img"></div>
-            <div class="donut-legend">
-              <span>■ 已完成 60件</span>
-              <span>■ 未完成 40件</span>
+          <div class="inspection maintenance-inspection">
+            <div class="inspection-item">
+              <div class="inspection-title">维保任务</div>
+              <div class="inspection-row">
+                <span>已完成</span>
+                <span class="inspection-number">60</span>
+              </div>
+              <div class="inspection-row">
+                <span>未完成</span>
+                <span class="inspection-number inspection-number-warning">40</span>
+              </div>
             </div>
           </div>
         </div>
@@ -98,8 +131,8 @@
       </div>
     </div>
 
-    <div class="block">
-      <div class="block-title">>> 应急板块</div>
+    <div class="block right-block-2">
+      <div class="block-title">应急板块</div>
       <div class="block-body">
         <div class="warning-mgmt">
           <div class="sub-title">◇ 预警管理</div>
@@ -116,11 +149,47 @@
         </div>
       </div>
     </div>
+
+
+    <div class="right-block-3">
+      <div class="right-block-title" v-for="value in sourceData" :key="value.label">
+        <div class="label">{{ value.label }}</div>
+        <div class="value">{{ value.value }}</div>
+      </div>
+    </div>
   </section>
 </template>
 
 <script setup>
+
+import { ref } from 'vue'
 // 数据可后续从 props 或 store 接入
+const sourceData = ref([
+  {
+    label: '质量板块',
+    value: '12345'
+  },
+  {
+    label: '质量板块',
+    value: '12345'
+  },
+  {
+    label: '质量板块',
+    value: '12345'
+  },
+  {
+    label: '质量板块',
+    value: '12345'
+  },
+  {
+    label: '质量板块',
+    value: '12345'
+  },
+  {
+    label: '质量板块',
+    value: '12345'
+  },
+])
 </script>
 
 <style scoped>
@@ -128,37 +197,93 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  overflow: auto;
+  position: relative;
+}
+.right-block-3{
+  position: absolute;
+  left: -195px;
+  top: 0;
+  .right-block-title{
+    width: 187px;
+    height: 64px;
+    background: url('@/assets/images/icon-13.png') no-repeat center;
+    background-size: 100% 100%;
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #ffffff;
+    font-family: Microsoft YaHei;
+    font-weight: 400;
+    font-size: 14px;
+    .value{
+      font-family: YouSheBiaoTiHei;
+    }
+  }
 }
 
-.right-panel {
-  width: 340px;
-  flex-shrink: 0;
+.iot-line {
+  height: 1px;
+  border: 1px dashed #2064A4;
+  margin: 0 14px 22px 14px;
 }
 
-.block {
-  background: rgba(8, 35, 65, 0.7);
-  border: 1px solid rgba(0, 186, 255, 0.2);
-  border-radius: 6px;
+.right-block-2 {
+  width: 404px;
+  height: 193px;
   overflow: hidden;
+  background: url('@/assets/images/icon-12.png') no-repeat center;
+  background-size: 100% 100%;
+}
+
+.right-block-1 {
+  width: 404px;
+  height: 783px;
+  overflow: hidden;
+  background: url('@/assets/images/icon-11.png') no-repeat center;
+  background-size: 100% 100%;
 }
 
 .block-title {
-  padding: 12px 16px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #00baff;
-  border-bottom: 1px solid rgba(0, 186, 255, 0.2);
+  font-family: FZCuHeiSongS-B-GB, 'Microsoft YaHei', sans-serif;
+  font-weight: 400;
+  font-size: 26px;
+  color: #ffffff;
+  line-height: 48px;
+  margin-left: 50px;
+  text-shadow: 0px 10px 3px rgba(27, 29, 31, 0.64);
+  background: linear-gradient(0deg, #ffffff 17.26%, #01befc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .block-body {
-  padding: 16px;
+  padding: 0 9px 0px;
+}
+
+.safe-days-label {
+  font-family: 'Microsoft YaHei', sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ffffff;
+  margin: 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .sub-title {
+  font-family: 'Microsoft YaHei', sans-serif;
+  font-weight: bold;
   font-size: 14px;
-  color: #7eb8da;
+  color: #ffffff;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .quality-control,
@@ -173,21 +298,70 @@
 }
 
 .inspection {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
 }
 
 .inspection-item {
+  width: 187px;
+  height: 88px;
+  background: url('@/assets/images/icon-14.png') no-repeat center;
+  background-size: 100% 100%;
+  color: #e5f2ff;
   font-size: 13px;
-  display: flex;
-  gap: 16px;
-  flex-wrap: wrap;
+  font-family: 'Microsoft YaHei', sans-serif;
+  padding: 12px 16px;
+
+  .number-1{
+    font-family: Microsoft YaHei;
+    font-weight: bold;
+    font-size: 16px;
+    color: #FFFFFF;
+    background: linear-gradient(0deg, #01ACFB 0%, #FFFFFF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .number-2{
+    font-family: Microsoft YaHei;
+    font-weight: bold;
+    font-size: 16px;
+    color: #FFFFFF;
+    background: linear-gradient(0deg, #FBD501 0%, #FFFFFF 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .mb-20{
+    margin-bottom: 20px;
+  }
 }
 
-.inspection-item span:first-child {
-  color: #94a3b8;
-  min-width: 120px;
+.inspection-title {
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 8px;
+}
+
+.inspection-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.inspection-row span:first-child {
+  color: #cbd5f5;
+}
+
+.inspection-number {
+  font-family: 'YouSheBiaoTiHei', 'Microsoft YaHei', sans-serif;
+  font-size: 18px;
+  color: #5de1ff;
+}
+
+.inspection-number-warning {
+  color: #ffd75e;
 }
 
 .date-tabs {

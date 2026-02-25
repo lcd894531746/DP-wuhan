@@ -1,3 +1,19 @@
+@font-face {
+  font-family: 'YouSheBiaoTiHei';
+  src: url('./style/YouSheBiaoTiHei-2.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'FZCuHeiSongS-B-GB';
+  src: url('./style/FZCHSJW--GB1-0.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;

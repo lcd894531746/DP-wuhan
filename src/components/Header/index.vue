@@ -6,7 +6,7 @@
     <div class="header-center">
       <h1 class="main-title">惟众信息安全质量信息化管理系统</h1>
     </div>
-    <div class="search-bar">
+    <!-- <div class="search-bar">
       <div class="search-input">
         <span class="search-icon">🔍</span>
         <input type="text" placeholder="搜索项目名称或电梯注册码" />
@@ -16,7 +16,7 @@
           <option>请选择街道名称</option>
         </select>
       </div>
-    </div>
+    </div> -->
     <div class="header-right">
       <span class="weather-icon">☀</span>
       <span class="temperature">38°C</span>
@@ -97,7 +97,7 @@ onUnmounted(() => clearInterval(timer))
 .search-bar {
   position: absolute;
   left: 50%;
-  bottom: 16px;
+  top: 100%;
   transform: translateX(-50%);
   display: flex;
   gap: 16px;
