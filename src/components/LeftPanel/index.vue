@@ -5,7 +5,7 @@
       <div class="block-title">安全板块</div>
       <div class="block-body">
         <div class="safe-days">
-          <div class="safe-days-label">
+          <div class="safe-days-label" style="margin-bottom: 10px;">
             <div class="safe-days-label-icon">
               <img style="width: 28px; height: 20px;" src="@/assets/images/sub-icon.png" alt="安全运行天数">
             </div>
@@ -168,7 +168,7 @@ const activeBrandTab = ref('brand')
 
 .left-block-3 {
   width: 404px;
-  /* height: 503px; */
+  height: 503px;
   overflow: hidden;
   background: url('@/assets/images/left-block-3.png') no-repeat center;
   background-size: 100% 100%;
@@ -203,7 +203,7 @@ const activeBrandTab = ref('brand')
   font-weight: bold;
   font-size: 14px;
   color: #ffffff;
-  margin: 10px 0;
+  /* margin: 10px 0; */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -257,11 +257,20 @@ const activeBrandTab = ref('brand')
   align-items: center;
   justify-content: flex-end;
   gap: 34px;
-  background: url('@/assets/images/left-1-1.png') no-repeat center center;
+  background: url('@/assets/images/icon-0.png') no-repeat center center;
   background-size: 100% 100%;
   width: 337px;
   height: 80px;
   position: relative;
+  &::before { 
+    content: '';
+    background: url('@/assets/images/icon-27.png') no-repeat center center;
+    width: 31px;
+    height: 31px;
+    background-size: 100% 100%;
+    position: absolute;
+    left: 24px;
+  }
 }
 
 .rescue-label {
@@ -491,7 +500,6 @@ const activeBrandTab = ref('brand')
 .pie-chart-row {
   display: flex;
   align-items: center;
-  margin-top: 8px;
   background: url('@/assets/images/icon-6.png') no-repeat center center;
   background-size: 100% 100%;
   width: 385px;

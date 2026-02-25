@@ -267,7 +267,7 @@ const sourceData = ref([
     height: 64px;
     background: url("@/assets/images/icon-13.png") no-repeat center;
     background-size: 100% 100%;
-    margin-bottom: 18px;
+    margin-top: 18px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -411,7 +411,7 @@ const sourceData = ref([
 
 .right-block-1 {
   width: 404px;
-  /* height: 783px; */
+  height: 783px;
   overflow: hidden;
   background: url("@/assets/images/icon-11.png") no-repeat center;
   background-size: 100% 100%;
@@ -440,7 +440,7 @@ const sourceData = ref([
   font-weight: bold;
   font-size: 14px;
   color: #ffffff;
-  margin: 10px 0;
+  /* margin: 10px 0; */
   display: flex;
   align-items: center;
   gap: 10px;
@@ -465,7 +465,7 @@ const sourceData = ref([
   }
   .weibao-content {
     width: 100%;
-    height: 143px;
+    height: 120px;
     background-color: #64748b;
   }
 }
@@ -609,7 +609,7 @@ const sourceData = ref([
 }
 
 .table-row span {
-  padding: 8px 0;
+  padding: 6px 0;
   text-align: center;
   border-right: 1px solid rgba(74, 160, 255, 0.8);
 }

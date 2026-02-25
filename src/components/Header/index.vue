@@ -18,8 +18,8 @@
       </div>
     </div> -->
     <div class="header-right">
-      <span class="weather-icon">☀</span>
-      <span class="temperature">38°C</span>
+      <div class="weather-icon"></div>
+      <div class="temperature">38°C</div>
     </div>
   </header>
 </template>
@@ -54,14 +54,12 @@ onUnmounted(() => clearInterval(timer))
 
 <style scoped>
 .header {
-  height: 100px;
+  height: 70px;
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: end;
   justify-content: space-between;
   padding: 0 24px;
-  /* background: linear-gradient(180deg, rgba(12, 45, 85, 0.9) 0%, rgba(8, 30, 58, 0.9) 100%); */
-  /* border-bottom: 1px solid rgba(0, 186, 255, 0.25); */
 }
 
 .header-left {
@@ -140,17 +138,26 @@ onUnmounted(() => clearInterval(timer))
 }
 
 .header-right {
-  flex: 0 0 120px;
-  text-align: right;
+  width: 120px;
+  display: flex;
+  align-items: center;
 }
 
 .weather-icon {
-  font-size: 24px;
-  margin-right: 8px;
+  width: 24px;
+  height: 25px;
+  background: url("@/assets/images/icon-29.png") no-repeat center center;
+  background-size: 100% 100%;
+  margin-right: 17px;
 }
 
 .temperature {
-  font-size: 22px;
-  color: #ffd93d;
+  font-family: Myriad Pro;
+  font-weight: 400;
+  font-size: 24px;
+  color: #FFFFFF;
+  background: linear-gradient(0deg, #3FA4F6 0%, #F7FDFF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 </style>

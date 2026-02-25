@@ -200,14 +200,14 @@ function initCesium() {
     creditContainer: document.createElement('div'),
     baseLayer: new C.ImageryLayer(
       new C.UrlTemplateImageryProvider({
-        url: 'https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}.png',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
         subdomains: ['a', 'b', 'c', 'd'],
       })
     ),
     sceneMode: C.SceneMode.SCENE3D,
   })
-      viewer.scene.backgroundColor = C.Color.fromCssColorString('#050810')
-      viewer.scene.globe.baseColor = C.Color.fromCssColorString('#0a0e1a')
+      viewer.scene.backgroundColor = C.Color.fromCssColorString('#000000')
+      viewer.scene.globe.baseColor = C.Color.fromCssColorString('#000000')
       viewer.scene.globe.enableLighting = false
       const controller = viewer.scene.screenSpaceCameraController
       controller.enableRotate = true
