@@ -1,12 +1,30 @@
 <template>
   <section class="panel right-panel">
+    <div class="right-block-3">
+      <div
+        class="right-block-title"
+        v-for="value in sourceData"
+        :key="value.label"
+      >
+        <div class="label">{{ value.label }}</div>
+        <div class="value">{{ value.value }}</div>
+        <div
+          class="icon"
+          :style="{ backgroundImage: `url(${value.icon})` }"
+        ></div>
+      </div>
+    </div>
     <div class="block right-block-1">
       <div class="block-title">质量板块</div>
       <div class="block-body">
         <div class="quality-control">
           <div class="safe-days-label">
             <div class="safe-days-label-icon">
-              <img style="width: 28px; height: 20px" src="@/assets/images/sub-icon.png" alt="质量管控" />
+              <img
+                style="width: 28px; height: 20px"
+                src="@/assets/images/sub-icon.png"
+                alt="质量管控"
+              />
             </div>
             <div class="safe-days-label-text">质量管控</div>
           </div>
@@ -19,7 +37,10 @@
               </div>
               <div class="inspection-row">
                 <span>不合格</span>
-                <span class="inspection-number inspection-number-warning number-2">21</span>
+                <span
+                  class="inspection-number inspection-number-warning number-2"
+                  >21</span
+                >
               </div>
             </div>
             <div class="inspection-item">
@@ -30,21 +51,32 @@
               </div>
               <div class="inspection-row">
                 <span>不合格</span>
-                <span class="inspection-number inspection-number-warning number-2">12</span>
+                <span
+                  class="inspection-number inspection-number-warning number-2"
+                  >12</span
+                >
               </div>
             </div>
             <div class="inspection-item">
               <div class="inspection-title mb-20">一次性检验合格率</div>
               <div class="inspection-row">
-                <span class="inspection-number number-1 " style="font-size: 16px;">156</span>
-                <span class="inspection-number number-1" style="font-size: 16px;">90%</span>
+                <span class="inspection-number number-1" style="font-size: 16px"
+                  >156</span
+                >
+                <span class="inspection-number number-1" style="font-size: 16px"
+                  >90%</span
+                >
               </div>
             </div>
             <div class="inspection-item">
               <div class="inspection-title mb-20">超期未检测统计</div>
               <div class="inspection-row">
                 <span></span>
-                <span class="inspection-number inspection-number-warning number-2" style="font-size: 16px;">1260</span>
+                <span
+                  class="inspection-number inspection-number-warning number-2"
+                  style="font-size: 16px"
+                  >1260</span
+                >
               </div>
             </div>
           </div>
@@ -54,7 +86,11 @@
           <div class="maintenance-header">
             <div class="safe-days-label">
               <div class="safe-days-label-icon">
-                <img style="width: 28px; height: 20px" src="@/assets/images/sub-icon.png" alt="维保" />
+                <img
+                  style="width: 28px; height: 20px"
+                  src="@/assets/images/sub-icon.png"
+                  alt="维保"
+                />
               </div>
               <div class="safe-days-label-text">维保</div>
             </div>
@@ -65,9 +101,7 @@
               <span class="tab">年</span>
             </div>
           </div>
-          <div class="weibao-content">
-            
-          </div>
+          <div class="weibao-content"></div>
         </div>
         <div class="iot-line-2"></div>
         <div class="repair">
@@ -80,14 +114,14 @@
               <span>月</span>
               <span>年</span>
             </div>
-            <div class="table-row">
+            <div class="table-row finished-row">
               <span>已完成</span>
               <span>2台</span>
               <span>23台</span>
               <span>80台</span>
               <span>140台</span>
             </div>
-            <div class="table-row">
+            <div class="table-row unfinished-row">
               <span>未完成</span>
               <span>0台</span>
               <span>5台</span>
@@ -96,8 +130,9 @@
             </div>
           </div>
         </div>
+        <div class="iot-line-2"></div>
         <div class="internal-check">
-          <div class="sub-title">● 内检</div>
+          <div class="sub-title repair-icon">内检</div>
           <div class="data-table">
             <div class="table-row header">
               <span></span>
@@ -106,14 +141,14 @@
               <span>月</span>
               <span>年</span>
             </div>
-            <div class="table-row">
+            <div class="table-row finished-row">
               <span>已完成</span>
               <span>5台</span>
               <span>30台</span>
               <span>95台</span>
               <span>180台</span>
             </div>
-            <div class="table-row">
+            <div class="table-row unfinished-row">
               <span>未完成</span>
               <span>1台</span>
               <span>8台</span>
@@ -129,74 +164,88 @@
       <div class="block-title">应急板块</div>
       <div class="block-body">
         <div class="warning-mgmt">
-          <div class="sub-title">◇ 预警管理</div>
-          <div class="warning-buttons">
-            <div class="warning-btn">
-              <span class="warn-icon">⚡</span>
-              <span>5条 安全预警</span>
+          <div class="safe-days-label">
+            <div class="safe-days-label-icon">
+              <img
+                style="width: 28px; height: 20px"
+                src="@/assets/images/sub-icon.png"
+                alt="质量管控"
+              />
             </div>
-            <div class="warning-btn">
-              <span class="warn-icon">⚡</span>
-              <span>10条 系统预警</span>
+            <div class="safe-days-label-text">预警管理</div>
+          </div>
+
+          <div class="safe-days-label warning-type">
+            <div class="safe-days-label-icon">
+              <img
+                style="width: 38px; height: 30px"
+                src="@/assets/images/icon-24.png"
+                alt="预警类型"
+              />
+            </div>
+            <div class="safe-days-label-text">预警类型</div>
+          </div>
+        </div>
+        <div class="warning-content">
+          <div class="left"></div>
+          <div class="right">
+            <div class="block1">
+              <div class="number">5条</div>
+              <div class="text">安全预警</div>
+            </div>
+            <div class="block2">
+              <div class="number">10条</div>
+              <div class="text">系统预警</div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-
-    <div class="right-block-3">
-      <div class="right-block-title" v-for="value in sourceData" :key="value.label">
-        <div class="label">{{ value.label }}</div>
-        <div class="value">{{ value.value }}</div>
-        <div class="icon" :style="{ backgroundImage: `url(${value.icon})` }"></div>
       </div>
     </div>
   </section>
 </template>
 
 <script setup>
-import icon16 from '@/assets/images/icon-16.png'
-import icon17 from '@/assets/images/icon-17.png'
-import icon18 from '@/assets/images/icon-18.png'
-import icon19 from '@/assets/images/icon-19.png'
-import icon20 from '@/assets/images/icon-20.png'
-import icon21 from '@/assets/images/icon-21.png'
+import icon16 from "@/assets/images/icon-16.png";
+import icon17 from "@/assets/images/icon-17.png";
+import icon18 from "@/assets/images/icon-18.png";
+import icon19 from "@/assets/images/icon-19.png";
+import icon20 from "@/assets/images/icon-20.png";
+import icon21 from "@/assets/images/icon-21.png";
 
-import { ref } from 'vue'
+import { ref } from "vue";
 // 数据可后续从 props 或 store 接入
 const sourceData = ref([
   {
-    label: '项目总数',
-    value: '12345',
-    icon: icon16
+    label: "项目总数",
+    value: "12345",
+    icon: icon16,
   },
   {
-    label: '总台数',
-    value: '12345',
-    icon: icon17
+    label: "总台数",
+    value: "12345",
+    icon: icon17,
   },
   {
-    label: '按需维保数',
-    value: '12345',
-    icon: icon18
+    label: "按需维保数",
+    value: "12345",
+    icon: icon18,
   },
   {
-    label: '物联网数',
-    value: '12345',
-    icon: icon19
+    label: "物联网数",
+    value: "12345",
+    icon: icon19,
   },
   {
-    label: 'AI视频数',
-    value: '12345',
-    icon: icon20
+    label: "AI视频数",
+    value: "12345",
+    icon: icon20,
   },
   {
-    label: '加装五方对讲',
-    value: '12345',
-    icon: icon21
+    label: "加装五方对讲",
+    value: "12345",
+    icon: icon21,
   },
-])
+]);
 </script>
 
 <style scoped>
@@ -216,7 +265,7 @@ const sourceData = ref([
     position: relative;
     width: 187px;
     height: 64px;
-    background: url('@/assets/images/icon-13.png') no-repeat center;
+    background: url("@/assets/images/icon-13.png") no-repeat center;
     background-size: 100% 100%;
     margin-bottom: 18px;
     display: flex;
@@ -233,10 +282,10 @@ const sourceData = ref([
       font-family: Microsoft YaHei;
       font-weight: 400;
       font-size: 14px;
-      color: #FFFFFF;
+      color: #ffffff;
     }
     .value {
-      color: #95DBFB;
+      color: #95dbfb;
       font-family: YouSheBiaoTiHei;
     }
     .icon {
@@ -255,41 +304,38 @@ const sourceData = ref([
 
 .iot-line {
   height: 1px;
-  border: 1px dashed #2064A4;
+  border: 1px dashed #2064a4;
   margin: 18px 14px 18px 14px;
 }
 .iot-line-2 {
   height: 1px;
-  border: 1px dashed #2064A4;
+  border: 1px dashed #2064a4;
   margin: 18px 0px 18px 0px;
 }
-.repair {
-
-  .repair-icon {
-    position: relative;
-    margin-left: 38px;
-    &::before {
-      content: '';
-      position: absolute;
-      left: -37px;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 28px;
-      height: 35px;
-      background: url('@/assets/images/icon-22.png') no-repeat center;
-      background-size: 100% 100%;
-    }
-    &::after {
-      content: '';
-      position: absolute;
-      left: -31px;
-      top: 44%;
-      transform: translateY(-50%);
-      width: 15px;
-      height: 15px;
-      background: url('@/assets/images/icon-23.png') no-repeat center;
-      background-size: 100% 100%;
-    }
+.repair-icon {
+  position: relative;
+  margin-left: 38px;
+  &::before {
+    content: "";
+    position: absolute;
+    left: -37px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 35px;
+    background: url("@/assets/images/icon-22.png") no-repeat center;
+    background-size: 100% 100%;
+  }
+  &::after {
+    content: "";
+    position: absolute;
+    left: -31px;
+    top: 44%;
+    transform: translateY(-50%);
+    width: 15px;
+    height: 15px;
+    background: url("@/assets/images/icon-23.png") no-repeat center;
+    background-size: 100% 100%;
   }
 }
 
@@ -297,20 +343,82 @@ const sourceData = ref([
   width: 404px;
   height: 193px;
   overflow: hidden;
-  background: url('@/assets/images/icon-12.png') no-repeat center;
+  background: url("@/assets/images/icon-12.png") no-repeat center;
   background-size: 100% 100%;
+  .warning-content {
+    display: flex;
+    align-items: center;
+    .left {
+      width: 107px;
+      height: 92px;
+
+      position: relative;
+      background: url("@/assets/images/icon-2.png") no-repeat center center;
+      background-size: 100% 100%;
+
+      &::after {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 39px;
+        position: absolute;
+        left: 45%;
+        transform: translateX(-50%);
+        background: url("@/assets/images/icon-25.png") no-repeat center center;
+        background-size: 100% 100%;
+      }
+    }
+    .right{
+      display: flex;
+      gap: 10px;
+      .block1 {
+        width: 135px;
+        height: 68px;
+        background: url("@/assets/images/icon-26.png") no-repeat  center center;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        .text {
+          margin-top: 14px;
+          font-family: Adobe Heiti Std;
+          font-weight: normal;
+          font-size: 16px;
+          color: #00E4FF;
+        }
+      }
+      .block2 {
+        width: 135px;
+        height: 68px;
+        background: url("@/assets/images/icon-26.png") no-repeat  center center;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        .text {
+          margin-top: 14px;
+          font-family: Adobe Heiti Std;
+          font-weight: normal;
+          font-size: 16px;
+          color: #00E4FF;
+        }
+      }
+    }
+  }
 }
 
 .right-block-1 {
   width: 404px;
-  height: 783px;
+  /* height: 783px; */
   overflow: hidden;
-  background: url('@/assets/images/icon-11.png') no-repeat center;
+  background: url("@/assets/images/icon-11.png") no-repeat center;
   background-size: 100% 100%;
 }
 
 .block-title {
-  font-family: FZCuHeiSongS-B-GB, 'Microsoft YaHei', sans-serif;
+  font-family: FZCuHeiSongS-B-GB, "Microsoft YaHei", sans-serif;
   font-weight: 400;
   font-size: 26px;
   color: #ffffff;
@@ -328,7 +436,7 @@ const sourceData = ref([
 }
 
 .safe-days-label {
-  font-family: 'Microsoft YaHei', sans-serif;
+  font-family: "Microsoft YaHei", sans-serif;
   font-weight: bold;
   font-size: 14px;
   color: #ffffff;
@@ -339,7 +447,7 @@ const sourceData = ref([
 }
 
 .sub-title {
-  font-family: 'Microsoft YaHei', sans-serif;
+  font-family: "Microsoft YaHei", sans-serif;
   font-weight: bold;
   font-size: 14px;
   color: #ffffff;
@@ -355,7 +463,7 @@ const sourceData = ref([
     align-items: center;
     justify-content: space-between;
   }
-  .weibao-content{
+  .weibao-content {
     width: 100%;
     height: 143px;
     background-color: #64748b;
@@ -372,19 +480,19 @@ const sourceData = ref([
 .inspection-item {
   width: 187px;
   height: 88px;
-  background: url('@/assets/images/icon-14.png') no-repeat center;
+  background: url("@/assets/images/icon-14.png") no-repeat center;
   background-size: 100% 100%;
   color: #e5f2ff;
   font-size: 13px;
-  font-family: 'Microsoft YaHei', sans-serif;
+  font-family: "Microsoft YaHei", sans-serif;
   padding: 12px 16px;
 
   .number-1 {
     font-family: Microsoft YaHei;
     font-weight: bold;
     font-size: 16px;
-    color: #FFFFFF;
-    background: linear-gradient(0deg, #01ACFB 0%, #FFFFFF 100%);
+    color: #ffffff;
+    background: linear-gradient(0deg, #01acfb 0%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -393,8 +501,8 @@ const sourceData = ref([
     font-family: Microsoft YaHei;
     font-weight: bold;
     font-size: 16px;
-    color: #FFFFFF;
-    background: linear-gradient(0deg, #FBD501 0%, #FFFFFF 100%);
+    color: #ffffff;
+    background: linear-gradient(0deg, #fbd501 0%, #ffffff 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
   }
@@ -422,7 +530,7 @@ const sourceData = ref([
 }
 
 .inspection-number {
-  font-family: 'YouSheBiaoTiHei', 'Microsoft YaHei', sans-serif;
+  font-family: "YouSheBiaoTiHei", "Microsoft YaHei", sans-serif;
   font-size: 18px;
   color: #5de1ff;
 }
@@ -434,7 +542,7 @@ const sourceData = ref([
 .date-tabs {
   display: flex;
   gap: 12px;
-  background: url('@/assets/images/icon-15.png') no-repeat center;
+  background: url("@/assets/images/icon-15.png") no-repeat center;
   background-size: 100% 100%;
   display: flex;
   align-items: center;
@@ -452,7 +560,7 @@ const sourceData = ref([
   /* border-bottom: 2px solid #00baff; */
   font-family: Microsoft YaHei;
   font-weight: bold;
-  color: #FCFDFE;
+  color: #fcfdfe;
 }
 
 .donut-placeholder {
@@ -479,18 +587,57 @@ const sourceData = ref([
 
 .data-table {
   font-size: 13px;
+  width: auto;
+  margin: 0 24px;
+  border: 1px solid rgba(74, 160, 255, 0.8);
+  border-collapse: collapse;
+  background: rgba(0, 64, 64, 0.45);
 }
 
 .table-row {
   display: grid;
   grid-template-columns: 80px 1fr 1fr 1fr 1fr;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  gap: 0;
+  padding: 0;
+  border-bottom: 1px solid rgba(74, 160, 255, 0.8);
 }
 
 .table-row.header {
-  color: #7eb8da;
+  color: #ffffff;
+  font-family: "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+}
+
+.table-row span {
+  padding: 8px 0;
+  text-align: center;
+  border-right: 1px solid rgba(74, 160, 255, 0.8);
+}
+
+.table-row span:first-child {
+  padding-left: 0;
+}
+
+.table-row span:last-child {
+  border-right: none;
+}
+
+.finished-row span {
+  color: #5ad68a;
+}
+
+.finished-row span:first-child {
+  font-family: "Microsoft YaHei", sans-serif;
+  font-weight: 500;
+}
+
+.unfinished-row span {
+  color: #f6c94c;
+}
+
+.unfinished-row span:first-child {
+  font-family: "Microsoft YaHei", sans-serif;
+  font-weight: 500;
 }
 
 .warning-buttons {
@@ -511,5 +658,12 @@ const sourceData = ref([
 
 .warn-icon {
   font-size: 24px;
+}
+.warning-mgmt {
+  display: flex;
+  align-items: center;
+  .warning-type {
+    margin-left: 60px;
+  }
 }
 </style>
