@@ -148,7 +148,7 @@ function loadWuhanGeoJson(C, onComplete) {
         dataSource.entities.values.forEach((entity, i) => {
           if (entity.polygon) {
             entity.polygon.height = 0
-            entity.polygon.extrudedHeight = 600
+            entity.polygon.extrudedHeight = 1200
             entity.polygon.material = C.Color.fromCssColorString('#142038').withAlpha(0.88)
             entity.polygon.outline = true
             entity.polygon.outlineColor = C.Color.fromCssColorString('#2d4a5f')
@@ -254,7 +254,7 @@ function initECharts() {
         },
         geo3D: {
           map: 'wuhan',
-          regionHeight: 2.5,
+          regionHeight: 200,
           center: [114.3055, 30.5928],
           boxWidth: 180,
           boxHeight: 20,
