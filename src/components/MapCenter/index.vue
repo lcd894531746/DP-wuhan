@@ -25,6 +25,8 @@
 import { ref, onMounted, onUnmounted, nextTick } from "vue";
 import * as echarts from "echarts";
 import "echarts-gl";
+import wuhanGeo from "@/wuhan_geo.json";
+import hubeiGeo from "@/HUBEI_geo.json";
 
 const SHOW_WUHAN_3D = false; // 武汉 3D 改由 Cesium 绘制，与底图完全重合
 
@@ -37,7 +39,6 @@ let chart = null;
 let resizeObserver = null;
 let resizeTimer = null;
 
-const GEO_URL = "https://geo.datav.aliyun.com/areas_v3/bound/420100_full.json";
 const center = [114.3055, 30.5928];
 const hubs = [
   { name: "江汉区", coord: [114.2707, 30.601], value: 78 },
@@ -165,18 +166,77 @@ function loadCesium() {
   });
 }
 
+// 加载湖北省行政区，用于在当前相机视角下叠加省级行政区轮廓和名称（不改变相机）
+function loadHubeiGeoJson(C) {
+  if (!viewer) return;
+  try {
+    const rawGeo = hubeiGeo;
+    const geoJson = transformGeoJsonToWgs84(rawGeo);
+    C.GeoJsonDataSource.load(geoJson, {
+      stroke: C.Color.fromCssColorString("#1D3A6A"),
+      fill: C.Color.fromCssColorString("#0B2442").withAlpha(0.25),
+      strokeWidth: 1.2,
+    })
+      .then((dataSource) => {
+        viewer.dataSources.add(dataSource);
+        const features = geoJson.features || [];
+        dataSource.entities.values.forEach((entity, i) => {
+          const feat = features[i];
+          const name = feat?.properties?.name ?? "";
+          const centroid =
+            feat?.properties?.centroid || feat?.properties?.center;
+
+          // 跳过“武汉市”这一级的 label，避免和 3D 武汉重复
+          if (name === "武汉市") return;
+
+          if (
+            name &&
+            centroid &&
+            Array.isArray(centroid) &&
+            centroid.length >= 2
+          ) {
+            const pos =
+              typeof centroid[0] === "number" ? centroid : centroid[0];
+            entity.position = C.Cartesian3.fromDegrees(pos[0], pos[1]);
+            entity.label = {
+              text: name,
+              font: '20px "Microsoft YaHei", sans-serif',
+              fillColor: C.Color.fromCssColorString("#FFFFFF"),
+              outlineColor: C.Color.fromCssColorString("#000000"),
+              outlineWidth: 2,
+              style: C.LabelStyle.FILL_AND_OUTLINE,
+              showBackground: true,
+              backgroundColor:
+                C.Color.fromCssColorString("#0B2442").withAlpha(0),
+              backgroundPadding: new C.Cartesian2(8, 4),
+              verticalOrigin: C.VerticalOrigin.CENTER,
+              horizontalOrigin: C.HorizontalOrigin.CENTER,
+              disableDepthTestDistance: Number.POSITIVE_INFINITY,
+              pixelOffset: new C.Cartesian2(0, -6),
+            };
+          }
+        });
+      })
+      .catch(() => {
+        console.warn("湖北 GeoJSON 解析失败");
+      });
+  } catch (e) {
+    console.warn("本地湖北 GeoJSON 加载异常:", e);
+  }
+}
+
 function loadWuhanGeoJson(C, onComplete) {
   if (!viewer) return;
-  fetch(GEO_URL)
-    .then((r) => r.json())
-    .then((rawGeo) => {
-      const geoJson = transformGeoJsonToWgs84(rawGeo);
-      return C.GeoJsonDataSource.load(geoJson, {
-        // 区域边界和面颜色，统一 0096ff 科技蓝主题
-        stroke: C.Color.fromCssColorString("#0B2442"),
-        fill: C.Color.fromCssColorString("#0B2442").withAlpha(1),
-        strokeWidth: 2,
-      }).then((dataSource) => {
+  try {
+    const rawGeo = wuhanGeo;
+    const geoJson = transformGeoJsonToWgs84(rawGeo);
+    C.GeoJsonDataSource.load(geoJson, {
+      // 区域边界和面颜色，统一 0096ff 科技蓝主题
+      stroke: C.Color.fromCssColorString("#0B2442"),
+      fill: C.Color.fromCssColorString("#0B2442").withAlpha(1),
+      strokeWidth: 2,
+    })
+      .then((dataSource) => {
         viewer.dataSources.add(dataSource);
         const features = geoJson.features || [];
         dataSource.entities.values.forEach((entity, i) => {
@@ -226,9 +286,9 @@ function loadWuhanGeoJson(C, onComplete) {
               text: name,
 
               // 🔥 字号调大
-              font: '22px "Microsoft YaHei", sans-serif',
+              font: '18px "Microsoft YaHei", sans-serif',
 
-              // 🔥 亮一点的科技白
+              // 🔥 更亮的白色文字
               fillColor: C.Color.fromCssColorString("#FFFFFF"),
 
               // 🔥 强对比描边
@@ -251,6 +311,21 @@ function loadWuhanGeoJson(C, onComplete) {
 
               // 🔥 轻微抬高
               pixelOffset: new C.Cartesian2(0, -6),
+
+              // 🔥 远距离仍然保持可见，不随距离变透明
+              // translucencyByDistance: new C.NearFarScalar(
+              //   0.0,
+              //   1.0,
+              //   2.5e6,
+              //   1.0,
+              // ),
+              // // 🔥 随距离略微缩放，避免太近时过大、太远时太小
+              // scaleByDistance: new C.NearFarScalar(0.0, 1.6, 2.5e6, 1.0),
+              // // 🔥 超远距离才隐藏
+              // distanceDisplayCondition: new C.DistanceDisplayCondition(
+              //   0.0,
+              //   5.0e6,
+              // ),
             };
           }
         });
@@ -278,12 +353,15 @@ function loadWuhanGeoJson(C, onComplete) {
           console.warn("相机飞行设置失败：", e);
         }
         onComplete?.();
+      })
+      .catch(() => {
+        console.warn("武汉 GeoJSON 解析失败");
+        onComplete?.();
       });
-    })
-    .catch(() => {
-      console.warn("武汉 GeoJSON 加载失败");
-      onComplete?.();
-    });
+  } catch (e) {
+    console.warn("本地武汉 GeoJSON 加载异常:", e);
+    onComplete?.();
+  }
 }
 
 function initCesium() {
@@ -370,6 +448,10 @@ function initCesium() {
           roll: C.Math.toRadians(359.99997456693046),
         },
       });
+      // 先叠加湖北省行政区（只增加轮廓和名称，不改变相机）
+      loadHubeiGeoJson(C);
+
+      // 再加载武汉 3D 建筑
       loadWuhanGeoJson(C, () => {
         mapReady.value = true;
         nextTick(() => resizeCesium());
@@ -382,143 +464,140 @@ function initCesium() {
 function initECharts() {
   if (!echartsRef.value) return;
   chart = echarts.init(echartsRef.value);
-
-  fetch(GEO_URL)
-    .then((r) => r.json())
-    .then((geoJson) => {
-      echarts.registerMap("wuhan", geoJson);
-      chart.setOption({
-        backgroundColor: "transparent",
-        tooltip: {
-          trigger: "item",
-          formatter: (p) => {
-            if (Array.isArray(p.value) && p.value.length >= 3) {
-              return `${p.name || "区域"}<br/>强度：${p.value[2]}`;
-            }
-            return p.name || "武汉";
-          },
+  try {
+    const geoJson = wuhanGeo;
+    echarts.registerMap("wuhan", geoJson);
+    chart.setOption({
+      backgroundColor: "transparent",
+      tooltip: {
+        trigger: "item",
+        formatter: (p) => {
+          if (Array.isArray(p.value) && p.value.length >= 3) {
+            return `${p.name || "区域"}<br/>强度：${p.value[2]}`;
+          }
+          return p.name || "武汉";
         },
-        geo3D: {
+      },
+      geo3D: {
+        map: "wuhan",
+        regionHeight: 200,
+        center: [114.3055, 30.5928],
+        boxWidth: 180,
+        boxHeight: 20,
+        boxDepth: 180,
+      },
+      series: [
+        {
+          name: "底图",
+          type: "map3D",
           map: "wuhan",
-          regionHeight: 200,
-          center: [114.3055, 30.5928],
-          boxWidth: 180,
-          boxHeight: 20,
-          boxDepth: 180,
+          shading: "lambert",
+          label: {
+            show: true,
+            color: "#bfe9ff",
+            fontSize: 10,
+          },
+          itemStyle: {
+            color: "#0d3d93",
+            borderColor: "#5fdcff",
+            borderWidth: 1.2,
+            opacity: 0.96,
+          },
+          emphasis: {
+            label: { color: "#fff" },
+            itemStyle: { color: "#1f9dff" },
+          },
+          light: {
+            main: { intensity: 1.3, alpha: 35, beta: 15, shadow: true },
+            ambient: { intensity: 0.45 },
+            ambientCubemap: { exposure: 1, diffuseIntensity: 0.4 },
+          },
+          viewControl: {
+            projection: "perspective",
+            autoRotate: false,
+            distance: 88,
+            alpha: 78,
+            beta: 0,
+            minDistance: 70,
+            maxDistance: 150,
+          },
+          groundPlane: {
+            show: false,
+          },
+          postEffect: {
+            enable: true,
+            bloom: { enable: true, bloomIntensity: 0.3 },
+            SSAO: { enable: true, radius: 2, intensity: 1.2 },
+          },
+          temporalSuperSampling: { enable: true },
         },
-        series: [
-          {
-            name: "底图",
-            type: "map3D",
-            map: "wuhan",
-            shading: "lambert",
-            label: {
-              show: true,
-              color: "#bfe9ff",
-              fontSize: 10,
+        {
+          name: "热力柱",
+          type: "bar3D",
+          coordinateSystem: "geo3D",
+          bevelSize: 0.25,
+          barSize: 2.1,
+          minHeight: 1,
+          data: barData,
+          shading: "color",
+          itemStyle: {
+            color: (params) => {
+              const v = params.value[2];
+              if (v > 80) return "#ffd166";
+              if (v > 60) return "#38d9ff";
+              return "#2f7bff";
             },
-            itemStyle: {
-              color: "#0d3d93",
-              borderColor: "#5fdcff",
-              borderWidth: 1.2,
-              opacity: 0.96,
-            },
-            emphasis: {
-              label: { color: "#fff" },
-              itemStyle: { color: "#1f9dff" },
-            },
-            light: {
-              main: { intensity: 1.3, alpha: 35, beta: 15, shadow: true },
-              ambient: { intensity: 0.45 },
-              ambientCubemap: { exposure: 1, diffuseIntensity: 0.4 },
-            },
-            viewControl: {
-              projection: "perspective",
-              autoRotate: false,
-              distance: 88,
-              alpha: 78,
-              beta: 0,
-              minDistance: 70,
-              maxDistance: 150,
-            },
-            groundPlane: {
-              show: false,
-            },
-            postEffect: {
-              enable: true,
-              bloom: { enable: true, bloomIntensity: 0.3 },
-              SSAO: { enable: true, radius: 2, intensity: 1.2 },
-            },
-            temporalSuperSampling: { enable: true },
+            opacity: 0.95,
           },
-          {
-            name: "热力柱",
-            type: "bar3D",
-            coordinateSystem: "geo3D",
-            bevelSize: 0.25,
-            barSize: 2.1,
-            minHeight: 1,
-            data: barData,
-            shading: "color",
-            itemStyle: {
-              color: (params) => {
-                const v = params.value[2];
-                if (v > 80) return "#ffd166";
-                if (v > 60) return "#38d9ff";
-                return "#2f7bff";
-              },
-              opacity: 0.95,
-            },
+        },
+        {
+          name: "飞线",
+          type: "lines3D",
+          coordinateSystem: "geo3D",
+          effect: {
+            show: true,
+            period: 3,
+            trailWidth: 4,
+            trailLength: 0.25,
+            trailOpacity: 0.9,
+            trailColor: "#9be8ff",
           },
-          {
-            name: "飞线",
-            type: "lines3D",
-            coordinateSystem: "geo3D",
-            effect: {
-              show: true,
-              period: 3,
-              trailWidth: 4,
-              trailLength: 0.25,
-              trailOpacity: 0.9,
-              trailColor: "#9be8ff",
-            },
-            lineStyle: {
-              width: 1.5,
-              color: "#69d9ff",
-              opacity: 0.35,
-            },
-            blendMode: "lighter",
-            data: lineData,
+          lineStyle: {
+            width: 1.5,
+            color: "#69d9ff",
+            opacity: 0.35,
           },
-          {
-            name: "核心点",
-            type: "scatter3D",
-            coordinateSystem: "geo3D",
-            symbol: "circle",
-            symbolSize: 14,
-            itemStyle: {
-              color: "#ffd166",
-              opacity: 1,
-            },
-            label: {
-              show: true,
-              formatter: "{b}",
-              color: "#ffe8a6",
-              fontSize: 12,
-              distance: 8,
-            },
-            data: [{ name: "武汉核心", value: [...center, 18] }],
+          blendMode: "lighter",
+          data: lineData,
+        },
+        {
+          name: "核心点",
+          type: "scatter3D",
+          coordinateSystem: "geo3D",
+          symbol: "circle",
+          symbolSize: 14,
+          itemStyle: {
+            color: "#ffd166",
+            opacity: 1,
           },
-        ],
-      });
-      chart.resize();
-    })
-    .catch(() => {
-      if (echartsRef.value) {
-        echartsRef.value.innerHTML =
-          '<div style="color:#fff;padding:24px;text-align:center;">地图数据加载失败，请检查网络。</div>';
-      }
+          label: {
+            show: true,
+            formatter: "{b}",
+            color: "#ffe8a6",
+            fontSize: 12,
+            distance: 8,
+          },
+          data: [{ name: "武汉核心", value: [...center, 18] }],
+        },
+      ],
     });
+    chart.resize();
+  } catch (e) {
+    if (echartsRef.value) {
+      echartsRef.value.innerHTML =
+        '<div style="color:#fff;padding:24px;text-align:center;">地图数据加载失败，请检查本地 wuhan_geo.json。</div>';
+    }
+  }
 }
 
 function resizeChart() {

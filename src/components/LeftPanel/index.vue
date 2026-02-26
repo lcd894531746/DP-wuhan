@@ -562,7 +562,7 @@ watch(activeBrandTab, () => {
 .rescue-box {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: center;
   gap: 34px;
   background: url('@/assets/images/icon-0.png') no-repeat center center;
   background-size: 100% 100%;
@@ -585,6 +585,7 @@ watch(activeBrandTab, () => {
   font-weight: bold;
   font-size: 18px;
   color: #fafbfc;
+  margin: 0 0 0 68px ;
 }
 
 .rescue-num {
