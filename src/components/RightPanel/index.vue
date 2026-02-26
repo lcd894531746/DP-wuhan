@@ -101,7 +101,25 @@
               <span class="tab">年</span>
             </div>
           </div>
-          <div class="weibao-content"></div>
+          <div class="weibao-content">
+            <div class="weibao-chart-wrap">
+              <div ref="weibaoChartRef" class="weibao-chart"></div>
+              <div class="weibao-center">
+                <span class="weibao-total">{{ weibaoStats.total }}</span>
+                <span class="weibao-unit">件</span>
+              </div>
+              <div class="weibao-legend">
+                <div class="weibao-legend-item">
+                  <span class="weibao-dot weibao-dot-blue"></span>
+                  <span>已完成 {{ weibaoStats.completed }}件</span>
+                </div>
+                <div class="weibao-legend-item">
+                  <span class="weibao-dot weibao-dot-yellow"></span>
+                  <span>未完成 {{ weibaoStats.uncompleted }}件</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
         <div class="iot-line-2"></div>
         <div class="repair">
@@ -212,7 +230,9 @@ import icon19 from "@/assets/images/icon-19.png";
 import icon20 from "@/assets/images/icon-20.png";
 import icon21 from "@/assets/images/icon-21.png";
 
-import { ref } from "vue";
+import { ref, onMounted, onBeforeUnmount } from "vue";
+import * as echarts from "echarts";
+
 // 数据可后续从 props 或 store 接入
 const sourceData = ref([
   {
@@ -246,6 +266,87 @@ const sourceData = ref([
     icon: icon21,
   },
 ]);
+
+// 维保环形图
+const weibaoChartRef = ref(null);
+let weibaoChartInstance = null;
+const weibaoStats = ref({
+  total: 100,
+  completed: 60,
+  uncompleted: 40,
+});
+
+function initWeibaoChart() {
+  if (!weibaoChartRef.value) return;
+  weibaoChartInstance = echarts.init(weibaoChartRef.value);
+  const { completed, uncompleted } = weibaoStats.value;
+  const pieData = [
+    { name: "已完成", value: completed },
+    { name: "未完成", value: uncompleted },
+  ];
+  weibaoChartInstance.setOption({
+    color: ["#01ACFB", "#FBD501"],
+    tooltip: {
+      trigger: "item",
+      formatter: "{b}: {c}件 ({d}%)",
+    },
+    grid: {
+      top: "10%",
+      left: "10%",
+      right: "10%",
+      bottom: "10%",
+    },
+    series: [
+      // 内层：稍暗的扇形，从圆心一直延续到外层环内边
+      {
+        type: "pie",
+        radius: ["0%", "55%"],
+        center: ["50%", "50%"],
+        avoidLabelOverlap: false,
+        label: { show: false },
+        labelLine: { show: false },
+        data: pieData,
+        itemStyle: {
+          borderColor: "rgba(0,0,0,0.25)",
+          borderWidth: 1,
+          color: (params) =>
+            params.dataIndex === 0 ? "#01608a" : "#b8960a",
+        },
+      },
+      // 外层：亮色扇形环
+      {
+        type: "pie",
+        radius: ["55%", "80%"],
+        center: ["50%", "50%"],
+        avoidLabelOverlap: false,
+        label: { show: false },
+        labelLine: { show: false },
+        data: pieData,
+        itemStyle: {
+          borderColor: "rgba(0,0,0,0.2)",
+          borderWidth: 1,
+        },
+      },
+    ],
+  });
+}
+
+function handleWeibaoResize() {
+  if (weibaoChartInstance) weibaoChartInstance.resize();
+}
+
+onMounted(() => {
+  initWeibaoChart();
+  window.addEventListener("resize", handleWeibaoResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", handleWeibaoResize);
+  if (weibaoChartInstance) {
+    weibaoChartInstance.dispose();
+    weibaoChartInstance = null;
+  }
+});
 </script>
 
 <style scoped>
@@ -424,7 +525,7 @@ const sourceData = ref([
   color: #ffffff;
   line-height: 48px;
   margin-left: 50px;
-  text-shadow: 0px 10px 3px rgba(27, 29, 31, 0.64);
+  /* text-shadow: 0px 10px 3px rgba(27, 29, 31, 0.64); */
   background: linear-gradient(0deg, #ffffff 17.26%, #01befc 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -466,8 +567,82 @@ const sourceData = ref([
   .weibao-content {
     width: 100%;
     height: 120px;
-    background-color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
+}
+
+.weibao-chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 104px;
+  display: flex;
+  align-items: center;
+  padding:0 40px;
+  box-sizing: border-box;
+}
+
+.weibao-chart {
+  width: 140px;
+  height: 104px;
+  flex-shrink: 0;
+  background: url("@/assets/images/icon-30.png") no-repeat center center;
+  background-size: 100% 100%;
+  margin-right: 50px;
+}
+
+.weibao-center {
+  position: absolute;
+  left: 28%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.weibao-total {
+  font-family: "Microsoft YaHei", sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ffffff;
+}
+
+.weibao-unit {
+  font-size: 10px;
+  color: #e5f2ff;
+}
+
+.weibao-legend {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: 8px;
+  font-size: 12px;
+  color: #e5f2ff;
+}
+
+.weibao-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.weibao-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.weibao-dot-blue {
+  background: #01acfb;
+}
+
+.weibao-dot-yellow {
+  background: #fbd501;
 }
 
 .inspection {

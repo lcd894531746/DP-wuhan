@@ -101,7 +101,29 @@
             </div>
           </div>
           <div class="pie-chart-row">
-            <div class="pie-chart-placeholder"></div>
+            <div
+              v-if="activeBrandTab === 'brand'"
+              class="pie-legend pie-legend-left"
+            >
+              <div class="legend-item">
+                <span class="dot dot-yellow"></span>
+                <span>蒂森</span>
+              </div>
+              <div class="legend-item">
+                <span class="dot dot-cyan"></span>
+                <span>奥的斯</span>
+              </div>
+            </div>
+            <div ref="pieChartRef" class="pie-chart-placeholder"></div>
+            <div
+              v-if="activeBrandTab === 'brand'"
+              class="pie-legend pie-legend-right"
+            >
+              <div class="legend-item">
+                <span class="dot dot-blue"></span>
+                <span>通力</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -110,7 +132,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
+import * as echarts from 'echarts'
+import 'echarts-gl'
 import manageIcon1 from '@/assets/images/manage-icon-1.png'
 import manageIcon2 from '@/assets/images/manage-icon-2.png'
 import manageIcon3 from '@/assets/images/manage-icon-3.png'
@@ -134,6 +158,289 @@ const iotStats = ref({
 })
 
 const activeBrandTab = ref('brand')
+
+const pieChartRef = ref(null)
+let pieChartInstance = null
+
+const brandPieData = [
+  { name: '通力', value: 45 },
+  { name: '奥的斯', value: 30 },
+  { name: '蒂森', value: 25 },
+]
+
+const yearPieData = [
+  { name: '0-5年', value: 40 },
+  { name: '5-10年', value: 35 },
+  { name: '10年以上', value: 25 },
+]
+
+// 品牌与颜色映射，保证名字和颜色一一对应
+const brandColorMap = {
+  通力: '#009CFF',
+  奥的斯: '#0CC9DE',
+  蒂森: '#D3AF11',
+}
+
+// 生成扇形的曲面参数方程，用于 series-surface.parametricEquation
+function getParametricEquation(startRatio, endRatio, isSelected, isHovered) {
+  let midRatio = (startRatio + endRatio) / 2
+
+  let startRadian = startRatio * Math.PI * 2
+  let endRadian = endRatio * Math.PI * 2
+  let midRadian = midRatio * Math.PI * 2
+
+  if (startRatio === 0 && endRatio === 1) {
+    isSelected = false
+  }
+
+  let offsetX = isSelected ? Math.sin(midRadian) * 0.1 : 0
+  let offsetY = isSelected ? Math.cos(midRadian) * 0.1 : 0
+
+  let hoverRate = isHovered ? 1.05 : 1
+
+  return {
+    u: {
+      min: 0,
+      max: Math.PI * 2,
+      step: Math.PI / 100,
+    },
+
+    v: {
+      min: 0,
+      max: Math.PI,
+      step: Math.PI / 50,
+    },
+
+    x(u, v) {
+      let tmp
+      if (midRatio - 0.5 < 0) {
+        if (u < startRadian || u > midRadian + Math.PI) {
+          tmp = u - Math.PI - midRadian < 0 ? u + Math.PI - midRadian : u - Math.PI - midRadian
+          return offsetX + (Math.sin(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+        if (u > endRadian && u < midRadian + Math.PI) {
+          tmp = midRadian + Math.PI - u
+          return offsetX + (Math.sin(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+      } else {
+        if (u < startRadian && u > midRadian - Math.PI) {
+          tmp = u + Math.PI - midRadian
+          return offsetX + (Math.sin(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+        if (u > endRadian || u < midRadian - Math.PI) {
+          tmp = midRadian - Math.PI - u < 0 ? midRadian + Math.PI - u : midRadian - Math.PI - u
+          return offsetX + (Math.sin(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+      }
+      return offsetX + Math.sin(v) * Math.sin(u) * hoverRate
+    },
+
+    y(u, v) {
+      let tmp
+      if (midRatio - 0.5 < 0) {
+        if (u < startRadian || u > midRadian + Math.PI) {
+          tmp = u - Math.PI - midRadian < 0 ? u + Math.PI - midRadian : u - Math.PI - midRadian
+          return offsetY + (Math.cos(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+        if (u > endRadian && u < midRadian + Math.PI) {
+          tmp = midRadian + Math.PI - u
+          return offsetY + (Math.cos(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+      } else {
+        if (u < startRadian && u > midRadian - Math.PI) {
+          tmp = u + Math.PI - midRadian
+          return offsetY + (Math.cos(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+        if (u > endRadian || u < midRadian - Math.PI) {
+          tmp = midRadian - Math.PI - u < 0 ? midRadian + Math.PI - u : midRadian - Math.PI - u
+          return offsetY + (Math.cos(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
+        }
+      }
+      return offsetY + Math.sin(v) * Math.cos(u) * hoverRate
+    },
+
+    z(u, v) {
+      // 调高上下表面距离，让“饼盘”更厚
+      return Math.cos(v) > 0 ? 0.35 : -0.35
+    },
+  }
+}
+
+// 根据饼图数据生成 3D 饼图的 option
+function getPie3D(pieData) {
+  const series = []
+  let sumValue = 0
+  let startValue = 0
+  let endValue = 0
+
+  for (let i = 0; i < pieData.length; i += 1) {
+    sumValue += pieData[i].value
+
+    const seriesItem = {
+      name: typeof pieData[i].name === 'undefined' ? `series${i}` : pieData[i].name,
+      type: 'surface',
+      parametric: true,
+      wireframe: {
+        show: false,
+      },
+      pieData: pieData[i],
+      pieStatus: {
+        selected: false,
+        hovered: false,
+      },
+      itemStyle: pieData[i].itemStyle || {},
+    }
+
+    series.push(seriesItem)
+  }
+
+  for (let i = 0; i < series.length; i += 1) {
+    endValue = startValue + series[i].pieData.value
+
+    series[i].pieData.startRatio = startValue / sumValue
+    series[i].pieData.endRatio = endValue / sumValue
+    series[i].parametricEquation = getParametricEquation(
+      series[i].pieData.startRatio,
+      series[i].pieData.endRatio,
+      false,
+      false,
+    )
+
+    startValue = endValue
+  }
+
+  // 透明圆环，用于 mouseover 辅助（这里主要是保证 3D 盘完整）
+  series.push({
+    name: 'outer',
+    type: 'surface',
+    parametric: true,
+    wireframe: {
+      show: false,
+    },
+    itemStyle: {
+      opacity: 0,
+    },
+    parametricEquation: {
+      u: {
+        min: 0,
+        max: Math.PI * 2,
+        step: Math.PI / 20,
+      },
+      v: {
+        min: 0,
+        max: Math.PI,
+        step: Math.PI / 20,
+      },
+      x(u, v) {
+        return Math.sin(v) * Math.sin(u) + Math.sin(u)
+      },
+      y(u, v) {
+        return Math.sin(v) * Math.cos(u) + Math.cos(u)
+      },
+      z(u, v) {
+        return Math.cos(v) > 0 ? 0.35 : -0.35
+      },
+    },
+  })
+
+  return {
+    tooltip: {
+      formatter(params) {
+        if (params.seriesName === 'outer') return ''
+        const item = params.series.pieData
+        return `${params.seriesName}<br/>${item.value} 台`
+      },
+    },
+    xAxis3D: {
+      min: -1,
+      max: 1,
+    },
+    yAxis3D: {
+      min: -1,
+      max: 1,
+    },
+    zAxis3D: {
+      min: -1,
+      max: 1,
+    },
+    grid3D: {
+      top: -10,
+      show: false,
+      boxHeight: 40,
+      viewControl: {
+        alpha: 40,
+        beta: 30,
+        distance: 120,
+      },
+      light: {
+        main: {
+          intensity: 1.2,
+        },
+        ambient: {
+          intensity: 0.4,
+        },
+      },
+    },
+    series,
+  }
+}
+
+function getCurrentPieData() {
+  return activeBrandTab.value === 'brand' ? brandPieData : yearPieData
+}
+
+function updatePieChart() {
+  if (!pieChartInstance) return
+
+  const data = getCurrentPieData()
+  const baseColors = ['#FBD501', '#22D3EE', '#3B82F6']
+
+  const pieData = data.map((item, idx) => ({
+    name: item.name,
+    value: item.value,
+    itemStyle: {
+      // 先按品牌映射精确指定颜色，再退回到默认顺序颜色
+      color:
+        activeBrandTab.value === 'brand'
+          ? brandColorMap[item.name] || baseColors[idx % baseColors.length]
+          : baseColors[idx % baseColors.length],
+    },
+  }))
+
+  const option = getPie3D(pieData)
+  pieChartInstance.setOption(option, true)
+}
+
+function initPieChart() {
+  if (!pieChartRef.value) return
+  if (!pieChartInstance) {
+    pieChartInstance = echarts.init(pieChartRef.value)
+  }
+  updatePieChart()
+}
+
+function handleResize() {
+  if (pieChartInstance) {
+    pieChartInstance.resize()
+  }
+}
+
+onMounted(() => {
+  initPieChart()
+  window.addEventListener('resize', handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize)
+  if (pieChartInstance) {
+    pieChartInstance.dispose()
+    pieChartInstance = null
+  }
+})
+
+watch(activeBrandTab, () => {
+  updatePieChart()
+})
 </script>
 
 <style scoped>
@@ -181,7 +488,7 @@ const activeBrandTab = ref('brand')
   color: #ffffff;
   line-height: 48px;
   margin-left: 50px;
-  text-shadow: 0px 10px 3px rgba(27, 29, 31, 0.64);
+  /* text-shadow: 0px 10px 3px rgba(27, 29, 31, 0.64); */
   background: linear-gradient(0deg, #ffffff 17.26%, #01befc 100%);
   -webkit-background-clip: text;
   background-clip: text;
@@ -500,6 +807,7 @@ const activeBrandTab = ref('brand')
 .pie-chart-row {
   display: flex;
   align-items: center;
+  justify-content: center;
   background: url('@/assets/images/icon-6.png') no-repeat center center;
   background-size: 100% 100%;
   width: 385px;
@@ -507,39 +815,36 @@ const activeBrandTab = ref('brand')
 }
 
 .pie-chart-placeholder {
-  background: url('@/assets/images/icon-9.png') no-repeat center center;
-  background-size: 100% 100%;
-  width: 100%;
-  height: 100%;
-  background-position: center center;
+  flex: 0 0 210px;
+  height: 140px;
+  background: url('@/assets/images/icon-9.png') no-repeat center 140%;
   background-size: 183px 114px;
-  position: relative;
-  &::after {
-    content: '';
-    display: block;
-    width: 146px;
-    height: 104px;
-    background: url('@/assets/images/icon-10.png') no-repeat center center;
-    background-size: 100% 100%;
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-  }
 }
 
 .pie-legend {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   font-size: 12px;
   color: #e2e8f0;
+}
+
+.pie-legend-left {
+  margin-left: 24px;
+}
+
+.pie-legend-right {
+  margin-right: 24px;
 }
 
 .legend-item {
   display: flex;
   align-items: center;
   gap: 6px;
+}
+
+.pie-legend-left .legend-item {
+  flex-direction: row-reverse; /* 文本在左，色块在右 */
 }
 
 .dot {
@@ -550,15 +855,14 @@ const activeBrandTab = ref('brand')
 }
 
 .dot-yellow {
-  background: #fbd501;
+  background: #d3af11;
 }
 
 .dot-blue {
-  background: #0f172a;
-  border: 1px solid #38bdf8;
+  background: #009cff;
 }
 
 .dot-cyan {
-  background: #38bdf8;
+  background: #0cc9de;
 }
 </style>
