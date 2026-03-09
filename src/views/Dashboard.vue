@@ -38,24 +38,37 @@ import MapCenter from '@/components/MapCenter/index.vue'
   position: relative;
   color: #c5d4e8;
   font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  background-color: #040b15;
 }
 
 /* 底图层：地图 */
 .map-base {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  z-index: 1; /* 在背景图之上，在前景面板之下 */
 }
 
 /* 背景图层：装饰框，在地图之上，透明区域可透出地图，不阻挡鼠标 */
 .dashboard-bg {
   position: fixed;
   inset: 0;
-  z-index: 1;
-  background-image: url('@/assets/images/background.png');
-  background-size: 100% 100%;
-  background-position: center;
-  background-repeat: no-repeat;
+  z-index: 0; /* 最底层 */
+  background-image:
+    url('@/assets/images/background.png'),
+    linear-gradient(rgba(4, 11, 21, 0.18), rgba(4, 11, 21, 0.18)),
+    url('@/assets/images/bg.png');
+  background-size:
+    100% 100%,
+    cover,
+    cover;
+  background-position:
+    center,
+    center,
+    center;
+  background-repeat:
+    no-repeat,
+    no-repeat,
+    no-repeat;
   pointer-events: none;
 }
 
