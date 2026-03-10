@@ -6,7 +6,7 @@
     <div class="header-center">
       <h1 class="main-title">惟众信息安全质量信息化管理系统</h1>
     </div>
-    <!-- <div class="search-bar">
+    <div class="search-bar">
       <div class="search-input">
         <span class="search-icon">🔍</span>
         <input type="text" placeholder="搜索项目名称或电梯注册码" />
@@ -16,7 +16,7 @@
           <option>请选择街道名称</option>
         </select>
       </div>
-    </div> -->
+    </div>
     <div class="header-right">
       <div class="weather-icon"></div>
       <div class="temperature">38°C</div>
@@ -94,9 +94,8 @@ onUnmounted(() => clearInterval(timer))
 
 .search-bar {
   position: absolute;
-  left: 50%;
-  top: 100%;
-  transform: translateX(-50%);
+  left: 500px;
+  top: 95px;
   display: flex;
   gap: 16px;
   align-items: center;
@@ -129,13 +128,16 @@ onUnmounted(() => clearInterval(timer))
 }
 
 .street-select select {
-  padding: 8px 16px;
+  padding: 10px 16px;
   background: rgba(0, 186, 255, 0.1);
   border: 1px solid rgba(0, 186, 255, 0.4);
   border-radius: 4px;
-  color: #fff;
+  color: rgba(255, 255, 255, 0.5);
   outline: none;
 }
+
+
+
 
 .header-right {
   width: 120px;

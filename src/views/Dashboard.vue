@@ -28,7 +28,8 @@
 import Header from '@/components/Header/index.vue'
 import LeftPanel from '@/components/LeftPanel/index.vue'
 import RightPanel from '@/components/RightPanel/index.vue'
-import MapCenter from '@/components/MapCenter/index.vue'
+// import MapCenter from '@/components/MapCenter/index.vue'
+import MapCenter from '@/components/MapCenter/indexThree.vue'
 </script>
 
 <style scoped>
@@ -43,9 +44,13 @@ import MapCenter from '@/components/MapCenter/index.vue'
 
 /* 底图层：地图 */
 .map-base {
-  position: fixed;
-  inset: 0;
+  position: absolute;
   z-index: 1; /* 在背景图之上，在前景面板之下 */
+  /* 让 3D 地图只占中间区域，留出四周的装饰背景 */
+  top: 10px;
+  bottom: 10px;
+  left: 10px;
+  right: 10px;
 }
 
 /* 背景图层：装饰框，在地图之上，透明区域可透出地图，不阻挡鼠标 */

@@ -12,6 +12,7 @@
     "autofit.js": "^2.0.3",
     "echarts": "^5.6.0",
     "echarts-gl": "^2.0.9",
+    "three": "^0.183.2",
     "vue": "^3.5.13"
   },
   "devDependencies": {

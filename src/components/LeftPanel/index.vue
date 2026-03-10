@@ -176,8 +176,8 @@ const yearPieData = [
 
 // 品牌与颜色映射，保证名字和颜色一一对应
 const brandColorMap = {
-  通力: '#009CFF',
-  奥的斯: '#0CC9DE',
+  通力: '#226FE6',
+  奥的斯: '#1E90FF',
   蒂森: '#D3AF11',
 }
 
@@ -212,51 +212,30 @@ function getParametricEquation(startRatio, endRatio, isSelected, isHovered) {
     },
 
     x(u, v) {
-      let tmp
-      if (midRatio - 0.5 < 0) {
-        if (u < startRadian || u > midRadian + Math.PI) {
-          tmp = u - Math.PI - midRadian < 0 ? u + Math.PI - midRadian : u - Math.PI - midRadian
-          return offsetX + (Math.sin(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
-        if (u > endRadian && u < midRadian + Math.PI) {
-          tmp = midRadian + Math.PI - u
-          return offsetX + (Math.sin(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
-      } else {
-        if (u < startRadian && u > midRadian - Math.PI) {
-          tmp = u + Math.PI - midRadian
-          return offsetX + (Math.sin(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
-        if (u > endRadian || u < midRadian - Math.PI) {
-          tmp = midRadian - Math.PI - u < 0 ? midRadian + Math.PI - u : midRadian - Math.PI - u
-          return offsetX + (Math.sin(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
+      // 将 u 归一化到 [startRadian, endRadian] 范围内
+      let normalizedU = u
+      const range = endRadian - startRadian
+      
+      if (u < startRadian) {
+        normalizedU = startRadian
+      } else if (u > endRadian) {
+        normalizedU = endRadian
       }
-      return offsetX + Math.sin(v) * Math.sin(u) * hoverRate
+      
+      return offsetX + Math.sin(v) * Math.sin(normalizedU) * hoverRate
     },
 
     y(u, v) {
-      let tmp
-      if (midRatio - 0.5 < 0) {
-        if (u < startRadian || u > midRadian + Math.PI) {
-          tmp = u - Math.PI - midRadian < 0 ? u + Math.PI - midRadian : u - Math.PI - midRadian
-          return offsetY + (Math.cos(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
-        if (u > endRadian && u < midRadian + Math.PI) {
-          tmp = midRadian + Math.PI - u
-          return offsetY + (Math.cos(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
-      } else {
-        if (u < startRadian && u > midRadian - Math.PI) {
-          tmp = u + Math.PI - midRadian
-          return offsetY + (Math.cos(startRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
-        if (u > endRadian || u < midRadian - Math.PI) {
-          tmp = midRadian - Math.PI - u < 0 ? midRadian + Math.PI - u : midRadian - Math.PI - u
-          return offsetY + (Math.cos(endRadian) * tmp) / (Math.PI - midRadian + startRadian) * hoverRate
-        }
+      // 将 u 归一化到 [startRadian, endRadian] 范围内
+      let normalizedU = u
+      
+      if (u < startRadian) {
+        normalizedU = startRadian
+      } else if (u > endRadian) {
+        normalizedU = endRadian
       }
-      return offsetY + Math.sin(v) * Math.cos(u) * hoverRate
+      
+      return offsetY + Math.sin(v) * Math.cos(normalizedU) * hoverRate
     },
 
     z(u, v) {
@@ -371,6 +350,9 @@ function getPie3D(pieData) {
         alpha: 40,
         beta: 30,
         distance: 120,
+        rotateSensitivity: 0,  // 禁止旋转
+        zoomSensitivity: 0,    // 禁止缩放
+        panSensitivity: 0,     // 禁止平移
       },
       light: {
         main: {

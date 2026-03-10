@@ -59,7 +59,8 @@ function initChart() {
   try {
     echarts.registerMap("wuhan", wuhanGeo);
     chart.setOption({
-      backgroundColor: "transparent",
+      // 整个 canvas 背景设为完全透明，避免一整块黑底
+      // backgroundColor: "rgba(0, 0, 0, 0)",
       tooltip: {
         trigger: "item",
         formatter: (params) => {
@@ -74,14 +75,15 @@ function initChart() {
         regionHeight: 8,
         boxWidth: 108,
         boxDepth: 124,
-        environment: "transparent",
+        // 关闭内置环境贴图，避免产生一大片深色背景
+        environment: "none",
         shading: "lambert",
         itemStyle: {
-          // 地图底色半透明，只保留一点蓝色轮廓
-          color: "rgba(18, 63, 168, 0.35)",
+          // 地图底色半透明，只保留一点蓝色轮廓 RGBA(31, 61, 110, 1)
+          color: "RGBA(31, 61, 110, 0.4)",
           borderColor: "#69d9ff",
           borderWidth: 1.4,
-          opacity: 0.7,
+          opacity: 1,
         },
         label: {
           show: true,
@@ -98,10 +100,10 @@ function initChart() {
           },
         },
         viewControl: {
-          projection: "perspective",
-          autoRotate: true,
-          autoRotateDirection: "cw",
-          autoRotateSpeed: 8,
+        projection: "perspective",
+        autoRotate: false,
+        autoRotateDirection: "cw",
+        autoRotateSpeed: 8,
           distance: 104,
           alpha: 62,
           beta: -8,
@@ -112,30 +114,24 @@ function initChart() {
           panSensitivity: 0,
         },
         light: {
-          main: {
-            intensity: 1.5,
-            alpha: 35,
-            beta: 12,
-            shadow: true,
-          },
-          ambient: {
-            intensity: 0.55,
-          },
+           main: {
+    intensity: 0.8
+  },
+  ambient: {
+    intensity: 0.8
+  }
         },
         groundPlane: {
           show: false,
         },
+        // 关闭会加重暗部的后期特效，避免区域被压黑
         postEffect: {
-          enable: true,
+          enable: false,
           bloom: {
-            enable: true,
-            bloomIntensity: 0.35,
+            enable: false,
           },
           SSAO: {
-            enable: true,
-            quality: "medium",
-            radius: 2,
-            intensity: 1.1,
+            enable: false,
           },
         },
         temporalSuperSampling: {
@@ -143,25 +139,25 @@ function initChart() {
         },
       },
       series: [
-        {
-          name: "武汉底图",
-          type: "map3D",
-          map: "wuhan",
-          geo3DIndex: 0,
-          shading: "lambert",
-          itemStyle: {
-            color: "rgba(18, 63, 168, 0.35)",
-            borderColor: "#69d9ff",
-            borderWidth: 1.4,
-            opacity: 0.7,
-          },
-          emphasis: {
-            itemStyle: {
-              color: "#2dbeff",
-            },
-          },
-          silent: false,
-        },
+        // {
+        //   name: "武汉底图",
+        //   type: "map3D",
+        //   map: "wuhan",
+        //   geo3DIndex: 0,
+        //   shading: "lambert",
+        //   itemStyle: {
+        //     color: "rgba(18, 63, 168, 0.35)",
+        //     borderColor: "#69d9ff",
+        //     borderWidth: 1.4,
+        //     opacity: 0.7,
+        //   },
+        //   emphasis: {
+        //     itemStyle: {
+        //       color: "#2dbeff",
+        //     },
+        //   },
+        //   silent: false,
+        // },
         {
           name: "热力柱",
           type: "bar3D",
