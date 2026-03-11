@@ -1,35 +1,49 @@
 <template>
   <div class="dashboard">
     <!-- 背景图：最底层 -->
-    <div class="dashboard-bg"></div>
+    <Transition name="ui-fade">
+      <div v-if="uiReady" class="dashboard-bg"></div>
+    </Transition>
     <!-- 底图：地图层 -->
     <div class="map-base">
-      <MapCenter />
+      <MapCenter @ready="onMapReady" />
     </div>
     <!-- 前景内容：覆盖在底图之上，中间区域不阻挡鼠标，方便操作地图 -->
     <div class="dashboard-overlay">
-      <div class="overlay-block">
-        <Header />
-      </div>
+      <Transition name="ui-fade-slide">
+        <div v-if="uiReady" class="overlay-block">
+          <Header />
+        </div>
+      </Transition>
       <main class="content">
-        <div class="overlay-block">
-          <LeftPanel />
-        </div>
+        <Transition name="ui-fade-slide-left">
+          <div v-if="uiReady" class="overlay-block">
+            <LeftPanel />
+          </div>
+        </Transition>
         <div class="center-space"></div>
-        <div class="overlay-block">
-          <RightPanel />
-        </div>
+        <Transition name="ui-fade-slide-right">
+          <div v-if="uiReady" class="overlay-block">
+            <RightPanel />
+          </div>
+        </Transition>
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
+import { ref } from "vue"
 import Header from '@/components/Header/index.vue'
 import LeftPanel from '@/components/LeftPanel/index.vue'
 import RightPanel from '@/components/RightPanel/index.vue'
 // import MapCenter from '@/components/MapCenter/index.vue'
 import MapCenter from '@/components/MapCenter/indexThree.vue'
+
+const uiReady = ref(false)
+function onMapReady() {
+  uiReady.value = true
+}
 </script>
 
 <style scoped>
@@ -57,11 +71,9 @@ import MapCenter from '@/components/MapCenter/indexThree.vue'
 .dashboard-bg {
   position: fixed;
   inset: 0;
-  z-index: 0; /* 最底层 */
+  z-index: 999; /* 最底层 */
   background-image:
-    url('@/assets/images/background.png'),
-    linear-gradient(rgba(4, 11, 21, 0.18), rgba(4, 11, 21, 0.18)),
-    url('@/assets/images/bg.png');
+    url('@/assets/images/background.png');
   background-size:
     100% 100%,
     cover,
@@ -104,5 +116,30 @@ import MapCenter from '@/components/MapCenter/indexThree.vue'
   flex: 1;
   min-width: 0;
   pointer-events: none;
+}
+
+/* 左右面板/头部入场动画（等待地图加载完成后再出现） */
+.ui-fade-enter-active {
+  transition: opacity 0.8s ease;
+}
+.ui-fade-enter-from {
+  opacity: 0;
+}
+.ui-fade-slide-enter-active,
+.ui-fade-slide-left-enter-active,
+.ui-fade-slide-right-enter-active {
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.ui-fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+.ui-fade-slide-left-enter-from {
+  opacity: 0;
+  transform: translateX(-16px);
+}
+.ui-fade-slide-right-enter-from {
+  opacity: 0;
+  transform: translateX(16px);
 }
 </style>
